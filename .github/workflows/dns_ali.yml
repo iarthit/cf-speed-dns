@@ -1,0 +1,27 @@
+name: 'dns_ali_push'
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+      - name: 'Set up Python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - name: 'Install dependencies'
+        run: if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: 'run alidns'
+        env:
+          DOMAIN: ${{ secrets.DOMAIN }}
+          SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
+          SECRETID: ${{ secrets.ACCESSKEY }}
+          SECRETKEY: ${{ secrets.ACCESSKEYSECRET }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        run: python alidns.py

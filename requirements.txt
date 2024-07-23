@@ -1,0 +1,2 @@
+requests==2.28.1
+alibabacloud_alidns20150109==3.5.1
