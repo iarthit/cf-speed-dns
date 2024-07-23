@@ -50,10 +50,10 @@ def build_info(client):
         print(response)
         print(222)
         if response.status_code == 200:
-            records = response.body.DomainRecords.Record
+            records = response.body["DomainRecords"]["Record"]  # 使用字典访问方式
             for record in records:
-                info = {"recordId": record.RecordId, "value": record.RR + record.DomainName}
-                if record.Line == "default":
+                info = {"recordId": record["RecordId"], "value": record["RR"] + record["DomainName"]}
+                if record["Line"] == "default":
                     def_info.append(info)
             print(f"build_info success: ---- Time: " + str(
                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
