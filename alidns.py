@@ -49,11 +49,11 @@ def build_info(client):
         print(111)
         print(response)
         print(222)
-        if response.get('statusCode') == 200:  # 使用get方法安全地访问字典键
-            records = response.get('body', {}).get('DomainRecords', {}).get('Record', [])
+        if response.status_code == 200:
+            records = response.body.DomainRecords.Record
             for record in records:
-                info = {"recordId": record.get("RecordId"), "value": record.get("RR") + record.get("DomainName")}
-                if record.get("line") == "default":
+                info = {"recordId": record.RecordId, "value": record.RR + record.DomainName}
+                if record.Line == "default":
                     def_info.append(info)
             print(f"build_info success: ---- Time: " + str(
                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
