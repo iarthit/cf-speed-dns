@@ -21,7 +21,7 @@ jobs:
         env:
           DOMAIN: ${{ secrets.DOMAIN }}
           SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
-          SECRETID: ${{ secrets.ACCESSKEY }}
-          SECRETKEY: ${{ secrets.ACCESSKEYSECRET }}
+          ACCESSKEY: ${{ secrets.ACCESSKEY }}
+          ACCESSKEYSECRET: ${{ secrets.ACCESSKEYSECRET }}
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: python alidns.py
