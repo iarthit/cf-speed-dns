@@ -45,25 +45,32 @@ def build_info(client):
             rrkey_word=SUB_DOMAIN
         )
         runtime = util_models.RuntimeOptions()
-        ret = client.describe_domain_records_with_options(describe_domain_records_request, runtime)
+        response = client.describe_domain_records_with_options(describe_domain_records_request, runtime)
         def_info = []
-        print(ret)
-        for record in ret["domainrecords"]["record"]:
-            info = {"recordId": record["recordid"], "value": record["rr"]}
-            if record["line"] == "默认":
-                def_info.append(info)
-        print(f"build_info success: ---- Time: " + str(
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
-        return def_info
+        print(111)
+        print(response)
+        print(222)
+        if response.statusCode == 200:
+            records = response.json()['result']
+            for record in response["body"]["DomainRecords"]["Record"]:
+                info = {"recordId": record["RecordId"], "value": record["RR"] + record["DomainName"]}
+                if record["line"] == "default":
+                    def_info.append(info)
+            print(f"build_info success: ---- Time: " + str(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
+            return def_info
+        else:
+            print(f"build_info ERROR: ---- Time: " + str(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(response))    
     except Exception as e:
         traceback.print_exc()
         print(f"build_info ERROR: ---- Time: " + str(
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(e))
 
 
-def change_dns(cloud, record_id, cf_ip):
+def change_dns(client, record_id, cf_ip):
     try:
-        cloud.change_record(DOMAIN, record_id, SUB_DOMAIN, cf_ip, "A", "默认", 600)
+        client.change_record(DOMAIN, record_id, SUB_DOMAIN, cf_ip, "A", "默认", 600)
         print(f"change_dns success: ---- Time: " + str(
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(cf_ip))
         return "ip:" + str(cf_ip) + "解析" + str(SUB_DOMAIN) + "." + str(DOMAIN) + "成功"
@@ -104,15 +111,16 @@ if __name__ == '__main__':
     # 获取DNS记录
     info = build_info(client)
 
+    print(info)
     # 获取最新优选IP
-    ip_addresses_str = get_cf_speed_test_ip()
-    ip_addresses = ip_addresses_str.split(',')
+    # ip_addresses_str = get_cf_speed_test_ip()
+    # ip_addresses = ip_addresses_str.split(',')
 
-    pushplus_content = []
+    # pushplus_content = []
     # 遍历 IP 地址列表
-    for index, ip_address in enumerate(ip_addresses):
-        # 执行 DNS 变更
-        dns = change_dns(cloud, info[index]["recordId"], ip_address)
-        pushplus_content.append(dns)
+    # for index, ip_address in enumerate(ip_addresses):
+    #     # 执行 DNS 变更
+    #     dns = change_dns(client, info[index]["recordId"], ip_address)
+    #     pushplus_content.append(dns)
 
-    pushplus('\n'.join(pushplus_content))
+    # pushplus('\n'.join(pushplus_content))
