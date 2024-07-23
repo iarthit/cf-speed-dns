@@ -37,7 +37,6 @@ def get_cf_speed_test_ip(timeout=10, max_retries=5):
     # 如果所有尝试都失败，返回 None 或者抛出异常，根据需要进行处理
     return None
 
-
 def build_info(client):
     try:
         describe_domain_records_request = alidns_20150109_models.DescribeDomainRecordsRequest(
@@ -50,18 +49,18 @@ def build_info(client):
         print(111)
         print(response)
         print(222)
-        if response.statusCode == 200:
-            records = response.json()['result']
-            for record in response["body"]["DomainRecords"]["Record"]:
-                info = {"recordId": record["RecordId"], "value": record["RR"] + record["DomainName"]}
-                if record["line"] == "default":
+        if response.get('statusCode') == 200:  # 使用get方法安全地访问字典键
+            records = response.get('body', {}).get('DomainRecords', {}).get('Record', [])
+            for record in records:
+                info = {"recordId": record.get("RecordId"), "value": record.get("RR") + record.get("DomainName")}
+                if record.get("line") == "default":
                     def_info.append(info)
             print(f"build_info success: ---- Time: " + str(
                 time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
             return def_info
         else:
             print(f"build_info ERROR: ---- Time: " + str(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(response))    
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(response))
     except Exception as e:
         traceback.print_exc()
         print(f"build_info ERROR: ---- Time: " + str(
