@@ -46,38 +46,39 @@ def build_info(client):
         runtime = util_models.RuntimeOptions()
         response = client.describe_domain_records_with_options(describe_domain_records_request, runtime)
         def_info = []
-        print(111)
-        print(response)
-        print(222)
         if response.status_code == 200:
-            records = response.body["DomainRecords"]["Record"]  # 使用字典访问方式
-            for record in records:
-                info = {"recordId": record["RecordId"], "value": record["RR"] + record["DomainName"]}
-                if record["Line"] == "default":
-                    def_info.append(info)
-            print(f"build_info success: ---- Time: " + str(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
+            responseData = response.to_map().get("body")
+            if responseData.get("TotalCount", 0) > 0:
+                records = responseData.get("DomainRecords", {}).get("Record", [])
+                for record in records:
+                    info = {"recordId": record["RecordId"], "value": record["RR"] + '.' + record["DomainName"]}
+                    if record["Line"] == "default":
+                        def_info.append(info)
+                print(f"build_info success: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(def_info))
             return def_info
         else:
-            print(f"build_info ERROR: ---- Time: " + str(
-                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(response))
+            print(f"build_info ERROR: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(response))
     except Exception as e:
         traceback.print_exc()
-        print(f"build_info ERROR: ---- Time: " + str(
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(e))
+        print(f"build_info ERROR: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(e))
 
 
 def change_dns(client, record_id, cf_ip):
     try:
-        client.change_record(DOMAIN, record_id, SUB_DOMAIN, cf_ip, "A", "默认", 600)
-        print(f"change_dns success: ---- Time: " + str(
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(cf_ip))
+        update_domain_record_request = alidns_20150109_models.UpdateDomainRecordRequest(
+            record_id = record_id,
+            rr = SUB_DOMAIN,
+            type = 'A',
+            value = cf_ip
+        )
+        runtime = util_models.RuntimeOptions()
+        client.update_domain_record_with_options(update_domain_record_request, runtime)
+        print(f"change_dns success: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(cf_ip))
         return "ip:" + str(cf_ip) + "解析" + str(SUB_DOMAIN) + "." + str(DOMAIN) + "成功"
 
     except Exception as e:
         traceback.print_exc()
-        print(f"change_dns ERROR: ---- Time: " + str(
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(e))
+        print(f"change_dns ERROR: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- MESSAGE: " + str(e))
         return "ip:" + str(cf_ip) + "解析" + str(SUB_DOMAIN) + "." + str(DOMAIN) + "失败"
 
 
@@ -110,16 +111,15 @@ if __name__ == '__main__':
     # 获取DNS记录
     info = build_info(client)
 
-    print(info)
     # 获取最新优选IP
-    # ip_addresses_str = get_cf_speed_test_ip()
-    # ip_addresses = ip_addresses_str.split(',')
+    ip_addresses_str = get_cf_speed_test_ip()
+    ip_addresses = ip_addresses_str.split(',')
 
-    # pushplus_content = []
+    pushplus_content = []
     # 遍历 IP 地址列表
-    # for index, ip_address in enumerate(ip_addresses):
-    #     # 执行 DNS 变更
-    #     dns = change_dns(client, info[index]["recordId"], ip_address)
-    #     pushplus_content.append(dns)
+    for index, ip_address in enumerate(ip_addresses):
+        # 执行 DNS 变更
+        dns = change_dns(client, info[index]["recordId"], ip_address)
+        pushplus_content.append(dns)
 
-    # pushplus('\n'.join(pushplus_content))
+    pushplus('\n'.join(pushplus_content))
