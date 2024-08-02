@@ -85,8 +85,8 @@ def change_dns(client, record_id, cf_ip):
 def pushplus(content):
     url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + QYWX_KEY
     data = {
-        "msgtype": "markdown",
-        "markdown": {
+        "msgtype": "text",
+        "text": {
             "content": "IP优选DNSAli推送\n\n" + content
         }
     }
