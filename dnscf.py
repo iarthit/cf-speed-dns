@@ -9,10 +9,8 @@ CF_API_TOKEN    =   os.environ["CF_API_TOKEN"]
 CF_ZONE_ID      =   os.environ["CF_ZONE_ID"]
 CF_DNS_NAME     =   os.environ["CF_DNS_NAME"]
 
-# pushplus_token
-PUSHPLUS_TOKEN  =   os.environ["PUSHPLUS_TOKEN"]
-
-
+# QYWX_KEY
+QYWX_KEY  =   os.environ["QYWX_KEY"]
 
 headers = {
     'Authorization': f'Bearer {CF_API_TOKEN}',
@@ -67,14 +65,13 @@ def update_dns_record(record_id, name, cf_ip):
 
 
 # 消息推送
-def push_plus(content):
-    url = 'http://www.pushplus.plus/send'
+def pushplus(content):
+    url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + QYWX_KEY
     data = {
-        "token": PUSHPLUS_TOKEN,
-        "title": "IP优选DNSCF推送",
-        "content": content,
-        "template": "markdown",
-        "channel": "wechat"
+        "msgtype": "markdown",
+        "markdown": {
+            "content": "IP优选DNSCF推送\n\n" + content
+        }
     }
     body = json.dumps(data).encode(encoding='utf-8')
     headers = {'Content-Type': 'application/json'}

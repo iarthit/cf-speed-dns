@@ -18,8 +18,8 @@ SUB_DOMAIN = os.environ['SUB_DOMAIN']
 ACCESSKEY = os.environ["ACCESSKEY"]
 ACCESSKEYSECRET = os.environ["ACCESSKEYSECRET"]
 
-# pushplus_token
-PUSHPLUS_TOKEN = os.environ["PUSHPLUS_TOKEN"]
+# QYWX_KEY
+QYWX_KEY = os.environ["QYWX_KEY"]
 
 
 def get_cf_speed_test_ip(timeout=10, max_retries=5):
@@ -83,13 +83,12 @@ def change_dns(client, record_id, cf_ip):
 
 
 def pushplus(content):
-    url = 'http://www.pushplus.plus/send'
+    url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + QYWX_KEY
     data = {
-        "token": PUSHPLUS_TOKEN,
-        "title": "IP优选DNSAli推送",
-        "content": content,
-        "template": "markdown",
-        "channel": "wechat"
+        "msgtype": "markdown",
+        "markdown": {
+            "content": "IP优选DNSAli推送\n\n" + content
+        }
     }
     body = json.dumps(data).encode(encoding='utf-8')
     headers = {'Content-Type': 'application/json'}
