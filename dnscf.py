@@ -66,7 +66,7 @@ def update_dns_record(record_id, name, cf_ip):
 
 
 # 消息推送
-def pushplus(content):
+def push_plus(content):
     url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + QYWX_KEY
     data = {
         "msgtype": "text",
