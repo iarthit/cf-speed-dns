@@ -23,5 +23,5 @@ jobs:
           SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
           ACCESSKEY: ${{ secrets.ACCESSKEY }}
           ACCESSKEYSECRET: ${{ secrets.ACCESSKEYSECRET }}
-          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          QYWX_KEY: ${{ secrets.QYWX_KEY }}
         run: python alidns.py
