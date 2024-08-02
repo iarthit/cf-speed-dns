@@ -54,6 +54,7 @@ def update_dns_record(record_id, name, cf_ip):
         'content': cf_ip
     }
     try:
+        response = requests.put(url, headers=headers, json=data)
         if response.status_code == 200:
             print(f"cf_dns_change success: ---- Time: " + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " ---- ip：" + str(cf_ip))
             return "ip:" + str(cf_ip) + "解析" + str(name) + "成功"
