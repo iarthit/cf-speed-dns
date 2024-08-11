@@ -90,6 +90,7 @@ def main():
     for index, ip_address in enumerate(ip_addresses):
         # 执行 DNS 变更
         dns = update_dns_record(dns_records[index], CF_DNS_NAME, ip_address)
+        print(dns)
         push_plus_content.append(dns)
     print(push_plus_content)
     push_plus('\n'.join(push_plus_content))
